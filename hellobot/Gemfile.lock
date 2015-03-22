@@ -1,0 +1,21 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    iron_core (1.0.7)
+      rest (>= 3.0.4)
+    iron_worker (3.0.1)
+      iron_core (>= 0.5.1)
+      rest (>= 3.0.6)
+    net-http-persistent (2.9.4)
+    netrc (0.10.3)
+    rest (3.0.6)
+      net-http-persistent (>= 2.9.1)
+      netrc
+    slack-notifier (1.1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  iron_worker
+  slack-notifier
