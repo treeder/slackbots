@@ -20,7 +20,7 @@ docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'bundl
 3) Test
 
 ```sh
-docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'ruby hellobot.rb -payload hello.payload -config config.json'
+docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'ruby hellobot.rb -payload slack.payload -config config.json'
 ```
 
 4) Upload to IronWorker

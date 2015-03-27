@@ -27,7 +27,7 @@ end
 channel = "\##{channel}" unless channel[0] == '#'
 
 # This is what we'll post back
-text = "Hello #{user_name} !"
+text = "Hello #{user_name}!"
 
 # Now send it to back to the channel on slack
 puts "Posting #{text} to #{channel}. .."
