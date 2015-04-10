@@ -5,7 +5,9 @@ require_relative 'slack_webhooks/version'
 module SlackWebhooks
   class Hook
 
-    attr_accessor :command, :trigger_word, :channel, :username, :text, :webhook_url, :botname
+    attr_accessor :command, :trigger_word, :channel, :username, :text, :webhook_url,
+                  :botname,
+                  :icon_url # Set the icon for the bot
     alias_method :user_name, :username
 
     # botname is the name to post to the channel with.
@@ -45,20 +47,23 @@ module SlackWebhooks
 
     end
 
-    def send(s, attachment=nil)
+    def send(s, options={})
       # Now send it to back to the channel on slack
       s = "#{command} #{text}" if s.nil?
-      puts "Posting #{s} to #{channel}. .."
       notifier = Slack::Notifier.new webhook_url
       notifier.channel = channel
       notifier.username = botname
 
       resp = nil
-      if attachment
-        resp = notifier.ping s, attachments: [attachment]
-      else
-        resp = notifier.ping s
+      attachment = options.delete(:attachment)
+      options[:attachments] = [attachment]
+      if self.icon_url != nil
+        options[:icon_url] = self.icon_url
       end
+
+      puts "Posting #{s} to #{channel} with options #{options}"
+
+      resp = notifier.ping s, options
 
       p resp
       p resp.message
