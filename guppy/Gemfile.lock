@@ -3,7 +3,7 @@ GEM
   specs:
     iron_core (1.0.7)
       rest (>= 3.0.4)
-    iron_worker (3.0.1)
+    iron_worker (3.0.2)
       iron_core (>= 0.5.1)
       rest (>= 3.0.6)
     net-http-persistent (2.9.4)
@@ -12,7 +12,7 @@ GEM
       net-http-persistent (>= 2.9.1)
       netrc
     slack-notifier (1.1.0)
-    slack_webhooks (0.0.4)
+    slack_webhooks (0.0.9)
       slack-notifier (>= 0.5.1)
 
 PLATFORMS

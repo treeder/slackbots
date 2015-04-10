@@ -19,18 +19,15 @@ attachment = {
 help = "Available options are:\n"
 responses.each_key { |k| help << "* #{k}\n" }
 # puts help
+sh.set_usage(help, attachment: attachment)
+exit if sh.help?
 
 r = responses[sh.text]
 if r
   attachment['image_url'] = r['image_url']
 else
-  # send help directly to user
-  sh.channel = sh.username
-  if sh.text == "help"
-    attachment['text'] = "#{help}"
-  else
-    attachment['text'] = "You gave me #{sh.text} -- Je ne comprend pas.\n#{help}"
-  end
+  sh.send_usage("You gave me #{sh.text} -- Je ne comprend pas.")
+  exit
 end
 
 s = "#{sh.command} #{sh.text}"
