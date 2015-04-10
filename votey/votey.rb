@@ -66,6 +66,8 @@ yeskey = "#{votename}-yes"
 nokey = "#{votename}-no"
 yr = nil
 nr = nil
+yeses = 0
+nos = 0
 if yinc != 0
   yr = @cache.increment(yeskey, yinc, :expires_in => expires_in)
 end
@@ -78,30 +80,37 @@ end
 if nr.nil?
   nr = @cache.get(nokey)
 end
-puts "yeses: #{yr.value}"
-puts "nos: #{nr.value}"
+if !yr.nil?
+  yeses = yr.value
+end
+if !nr.nil?
+  nos = nr.value
+end
+puts "yeses: #{yeses}"
+puts "nos: #{nos}"
 
 text = ""
 color = "warning"
-if yr.value > nr.value
+if yeses > nos
   color = "good"
-elsif yr.value < nr.value
+elsif yeses < nos
   color = "danger"
 end
 
 attachment = {
     "fallback" => text,
-    "text" => "Voting results",
+    "text" => "Voting results for `/vote #{votename}`",
     "color" => color,
+    "mrkdwn_in" => ["text", "pretext"],
     "fields" => [
         {
             "title" => "Yes",
-            "value" => "#{yr.value}",
+            "value" => "#{yeses}",
             "short" => true
         },
         {
             "title" => "No",
-            "value" => "#{nr.value}",
+            "value" => "#{nos}",
             "short" => true
         },
     ]
