@@ -1,4 +1,5 @@
 source "http://rubygems.org"
 
-gem 'slack-notifier'
 gem 'iron_worker'
+gem 'slack-notifier'
+gem 'slack_webhooks'

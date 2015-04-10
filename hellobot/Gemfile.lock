@@ -12,6 +12,8 @@ GEM
       net-http-persistent (>= 2.9.1)
       netrc
     slack-notifier (1.1.0)
+    slack_webhooks (0.0.1)
+      slack-notifier (>= 0.5.1)
 
 PLATFORMS
   ruby
@@ -19,3 +21,4 @@ PLATFORMS
 DEPENDENCIES
   iron_worker
   slack-notifier
+  slack_webhooks
