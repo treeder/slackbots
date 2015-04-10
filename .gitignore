@@ -4,3 +4,5 @@
 *.zip
 config.json
 iron.json
+
+bundle/
