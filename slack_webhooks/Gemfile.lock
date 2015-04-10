@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    iron_mq (0.1.0)
+    slack_webhooks (0.0.6)
       slack-notifier (>= 0.5.1)
 
 GEM
@@ -13,4 +13,4 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  iron_mq!
+  slack_webhooks!

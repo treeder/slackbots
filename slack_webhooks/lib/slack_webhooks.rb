@@ -7,7 +7,8 @@ module SlackWebhooks
 
     attr_accessor :command, :trigger_word, :channel, :username, :text, :webhook_url,
                   :botname,
-                  :icon_url # Set the icon for the bot
+                  :icon_url, # Set the icon for the bot
+                  :usage_options
     alias_method :user_name, :username
 
     # botname is the name to post to the channel with.
@@ -47,6 +48,18 @@ module SlackWebhooks
 
     end
 
+    # Takes similar options as send. options can have attachments or whatever
+    def set_usage(text, options={})
+      options[:attachments] ||= []
+      options[:attachments].unshift({'text' => text})
+      self.usage_options = options
+    end
+
+    def send_usage(extra_text='')
+      self.channel = self.username
+      self.send(extra_text, self.usage_options)
+    end
+
     def send(s, options={})
       # Now send it to back to the channel on slack
       s = "#{command} #{text}" if s.nil?
@@ -56,7 +69,10 @@ module SlackWebhooks
 
       resp = nil
       attachment = options.delete(:attachment)
-      options[:attachments] = [attachment]
+      if attachment
+        options[:attachments] ||= []
+        options[:attachments] << attachment
+      end
       if self.icon_url != nil
         options[:icon_url] = self.icon_url
       end
@@ -67,6 +83,15 @@ module SlackWebhooks
 
       p resp
       p resp.message
+    end
+
+    def help?
+      if self.text == "help"
+        # send help directly to user
+        send_usage
+        return true
+      end
+      return false
     end
   end
 end
