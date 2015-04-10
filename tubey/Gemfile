@@ -1,0 +1,5 @@
+source "http://rubygems.org"
+
+gem 'slack_webhooks'
+gem 'youtube_it'
+gem 'iron_worker'
