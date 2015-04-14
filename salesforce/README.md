@@ -1,5 +1,9 @@
 ## Opportunity Bot
 
+Posts updates to Salesforce Opportunities to the Slack Channel of your choice. 
+
+![Oppbot Screenshot](oppbot-screenshot.png)
+
 This one is meant to be scheduled, not to be used as a slash command. After uploading, go into HUD
 and schedule it to run every hour. 
 
