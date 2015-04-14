@@ -1,0 +1,12 @@
+{
+  "webhook_url": "https://hooks.slack.com/services/ABC",
+  "channel": "#sales",
+  "salesforce": {
+    "description": "This is using restforce gem, see here for more information on these value: https://github.com/ejholmes/restforce",
+    "username": "sfusername@yourdomain.com",
+    "password": "sfpassword",
+    "security_token": "sfsecuritytoken",
+    "client_id": "sfclientid",
+    "client_secret": "sfclientsecret"
+  }
+}

@@ -1,10 +1,8 @@
 require_relative 'bundle/bundler/setup'
-require 'open-uri'
 require 'iron_worker'
 require 'slack_webhooks'
-require 'google/api_client'
 require 'restforce'
-require_relative 'google_datastore'
+require 'iron_cache'
 
 # Config models
 class SlackC
@@ -44,16 +42,30 @@ config.salesforce.set(IronWorker.config['salesforce'])
 config.slack.webhook_url = IronWorker.config['webhook_url']
 config.slack.channel = IronWorker.config['channel']
 
-config.google.project_id = "myproject"
-config.google.service_account_id = "abc@developer.gserviceaccount.com"
+@ic = IronCache::Client.new
+@cache = @ic.cache("salesbot")
+@last_check_key = "opportunity_bot_last_check"
 
-gd = GoogleDatastore.new(config.google)
+def get_last_check
+  item = @cache.get(@last_check_key)
+  if item != nil
+    last_check = DateTime.parse(item.value)
+  else
+    last_check = Date.today.prev_day.to_datetime # "2015-01-01T00:00:01z"
+  end
+  puts "last_check: #{last_check.inspect} class=#{last_check.class.name}"
+  return last_check
+end
 
-def get_opp_updates(config, gd)
+def insert_check_date
+  @cache.put(@last_check_key, DateTime.now.rfc3339, :expires_in => 86400 * 7)
+end
+
+def get_opp_updates(config)
 
   client = Restforce.new(config.salesforce.to_hash)
 
-  last_check = gd.get_last_check
+  last_check = get_last_check
   # for testing:
   # last_check = Date.today.prev_day.to_datetime # "2015-01-01T00:00:01z"
 
@@ -96,7 +108,7 @@ def get_opp_updates(config, gd)
     end
   end
 
-  gd.insert_new_check_date()
+  insert_check_date()
   puts "Posted #{posted} updates to slack. "
 
 end
@@ -184,5 +196,5 @@ def post_to_slack(config, sclient, op, account, owner, h)
   puts "done"
 end
 
-get_opp_updates(config, gd)
+get_opp_updates(config)
 
