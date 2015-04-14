@@ -1,0 +1,8 @@
+source "http://rubygems.org"
+
+gem 'restforce'
+gem 'slack_webhooks'
+gem 'google-api-client'
+gem 'intercom'
+gem 'iron_worker'
+
