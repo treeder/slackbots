@@ -1,6 +1,5 @@
 require_relative 'bundle/bundler/setup'
 require 'open-uri'
-require 'slack-notifier'
 require 'iron_worker'
 require 'slack_webhooks'
 

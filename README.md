@@ -1,7 +1,3 @@
-
-
-TODO: link to blog post
-
 All of the examples in this repository follow the same pattern for testing and uploading to IronWorker. Just `cd`
 into the bots directory and do the following: 
 
