@@ -1,4 +1,4 @@
 source "http://rubygems.org"
 
-gem 'iron_worker'
 gem 'slack_webhooks'
+gem 'iron_worker', '>= 3.0.2'
