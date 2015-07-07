@@ -19,5 +19,12 @@
   "obiwan": {"image_url": "http://i.giphy.com/2vERRTu559XQk.gif"},
   "wat": {"image_url": "http://i.giphy.com/qxtxlL4sFFle.gif"},
   "ivan": {"image_url": "http://i.giphy.com/2OMHmoFMiJjfq.gif"},
-  "freakout": {"image_url": "http://i.giphy.com/FwpecpDvcu7vO.gif"}
+  "freakout": {"image_url": "http://i.giphy.com/FwpecpDvcu7vO.gif"},
+  "boom-chuck": {"image_url": "http://i.giphy.com/10PkQyXWagNrqg.gif"},
+  "boom-drake": {"image_url": "http://i.giphy.com/8vW915bv0DqXC.gif"},
+  "boom-dany": {"image_url": "http://i.giphy.com/LrN9NbJNp9SWQ.gif"},
+  "boom-moon": {"image_url": "http://i.giphy.com/ydMNTWYVjSEFi.gif"},
+  "boom-franco": {"image_url": "http://i.giphy.com/b3u8anVaWFQ9G.gif"}
+  
+  
 }
