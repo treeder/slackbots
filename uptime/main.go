@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"sort"
 	"time"
 
 	"github.com/iron-io/iron_go/cache"
@@ -59,6 +60,17 @@ func main() {
 	attachments = append(attachments, buildReportsAttachment("IronWorker", workerUptimes))
 	attachments = append(attachments, buildReportsAttachment("Other", otherUptimes))
 
+	var reports UptimeReports
+	reports = append(reports, mqUptimes...)
+	reports = append(reports, workerUptimes...)
+	reports = append(reports, otherUptimes...)
+	sort.Sort(reports)
+
+	if len(reports) > 2 {
+		attachments = append(attachments, buildReportAttachment(reports[0]))
+		attachments = append(attachments, buildReportAttachment(reports[1]))
+	}
+	//fmt.Println("", attachments)
 	slackClient.post("", attachments)
 }
 
@@ -84,5 +96,26 @@ func buildReportsAttachment(name string, u UptimeReports) Attachment {
 		Value: fmt.Sprintf("%.4f%% (%s)", u.monthlyUptime()*100, u.totalMonthlyDowntime()),
 		Short: true,
 	})
+	return attachment
+}
+
+// Build an attachment for a single report.
+func buildReportAttachment(u *UptimeReport) Attachment {
+	var attachment Attachment
+	attachment.Title = u.Name
+	attachment.Color = "#C77838"
+	attachment.Fields = append(attachment.Fields, Field{
+		Title: "24 hours",
+		Value: fmt.Sprintf("%.4f%% (%s)", u.DayAgo.uptimePercentage(),
+			(u.DayAgo.Downtime() * time.Second).String()),
+		Short: true,
+	})
+	attachment.Fields = append(attachment.Fields, Field{
+		Title: "7 Days",
+		Value: fmt.Sprintf("%.4f%% (%s)", u.WeekAgo.uptimePercentage(),
+			(u.WeekAgo.Downtime() * time.Second).String()),
+		Short: true,
+	})
+
 	return attachment
 }
