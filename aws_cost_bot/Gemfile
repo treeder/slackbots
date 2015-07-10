@@ -1,0 +1,7 @@
+source "http://rubygems.org"
+
+gem 'slack_webhooks'
+gem 'iron_worker'
+gem 'iron_cache'
+gem 'fog'
+gem 'amazon-pricing'
