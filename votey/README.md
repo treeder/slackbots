@@ -1,6 +1,8 @@
 Users can vote on something. 
 
+```
 /vote <vote_name> yes/no
+```
 
 ## Additional steps required to run this Bot
 
