@@ -88,6 +88,7 @@ projects.each_pair do |k,v|
 end
 
 File.open('costs.csv', 'w') do |file|
+  file.write("Project,Servers,Monthly Cost\n")
   projects.each_pair do |k,v|
     file.write("#{k},#{v['count']},#{v['price_per_month']}\n")
   end
@@ -98,12 +99,16 @@ p byzone
 # Now for RI coverage
 
 File.open('ri-coverage.csv', 'w') do |file|
+  file.write("Zone,Type,Count,RI's,NOT Covered\n")
   byzone.each_pair do |zone,v|
     ris = reserved_hash[zone] || {}
     v.each_pair do |itype,itv|
       # Now compare v to ris
       rit = ris[itype] || {}
-      file.write("#{zone},#{itype},#{itv['count']},#{rit['count']}\n")
+      icount = itv['count']
+      ricount = rit['count']
+      uncovered = icount - ricount
+      file.write("#{zone},#{itype},#{icount},#{ricount},#{uncovered}\n")
     end
   end
 end

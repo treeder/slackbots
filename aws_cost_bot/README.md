@@ -9,7 +9,19 @@ Create an iron.json file in this directory with your Iron.io project_id and toke
 
 ### 2) Add your AWS credentials to config.json 
 
-### 3) Schedule it
+Copy `config-example.json` to `config.json` and fill it in. 
+
+### 3) Test it
+
+```
+docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'ruby <BOTNAME>.rb -payload slack.payload -config config.json'
+```
+
+### 4) Upload it
+
+
+
+### 5) Schedule it
 
 This bot is intended to be scheduled, rather than turned into a slash command so instead of making a slash command, 
 schedule it:
