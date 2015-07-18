@@ -4,14 +4,27 @@ require 'slack_webhooks'
 require 'iron_cache'
 require 'fog'
 require 'amazon-pricing'
+require 'slack'
 
-sh = SlackWebhooks::Hook.new('votey', IronWorker.payload, IronWorker.config['webhook_url'])
-sh.icon_url = "http://s2.hubimg.com/u/7842695_f260.jpg"
-sh.set_usage "Usage: /vote <vote_name> <yes/no>"
-exit if sh.help?
+slack = Slack::Client.new(:token => IronWorker.config['slack_token'])
+channel = IronWorker.config['channel']
+channel_id = "x"
+
+# apparently the only way to get the channel id is like this:
+slack.channels_list['channels'].each do |c|
+  puts "name: #{c['name']}, id: #{c['id']}"
+  if c['name'] == channel || c['name'] == channel[1..channel.length]
+    channel_id = c['id']
+    break
+  end
+end
+
+sh = SlackWebhooks::Hook.new('costbot', IronWorker.payload, IronWorker.config['webhook_url'])
+sh.icon_url = "http://images.clipartpanda.com/save-money-icon-save-money-icon-iebaaazn.png"
+sh.channel = channel
 
 @ic = IronCache::Client.new
-@cache = @ic.cache("votey")
+@cache = @ic.cache("costbot")
 
 compute = Fog::Compute.new(
     :provider => :aws,
@@ -23,7 +36,7 @@ reserved_hash = {}
 reserved = compute.describe_reserved_instances
 reserved.body['reservedInstancesSet'].each do |ris|
   next if ris['state'] != 'active'
-  p ris
+  # p ris
   # todo: use offeringType, maybe use amount too?  amount is hourly cost, fixed price is up front cost
   az = ris['availabilityZone']
   itype = ris['instanceType']
@@ -82,148 +95,130 @@ compute.servers.each do |server|
   # puts "#{project_name}, #{region},#{az},#{server.id},#{server.public_ip_address},#{itype},$#{price_per_hour},$#{price_per_month}"
 end
 
-projects.each_pair do |k,v|
-  puts "#{k}, count: #{v['count']}, price_per_month: #{sprintf('$%.2f', v['price_per_month'])}"
-  p v['azs']
-end
 
-File.open('costs.csv', 'w') do |file|
-  file.write("Project,Servers,Monthly Cost\n")
-  projects.each_pair do |k,v|
-    file.write("#{k},#{v['count']},#{v['price_per_month']}\n")
+def write_table(filename, table)
+  File.open(filename, 'w') do |file|
+    table.each do |row|
+      row.each do |c|
+        file.write(c)
+        file.write(',')
+      end
+      file.write("\n")
+    end
   end
 end
+
+def stringify_table(table, separator=",")
+  s = ""
+  table.each do |row|
+    row.each do |c|
+      s << c << separator
+    end
+    s << "\n"
+  end
+  s
+end
+
+projects_costs_table = [["Project", "Servers", "Monthly Cost"]]
+projects.each_pair do |k,v|
+  puts "#{k}, count: #{v['count']}, price_per_month: #{sprintf('$%.2f', v['price_per_month'])}"
+  # p v['azs']
+  projects_costs_table << ["#{k}", "#{v['count']}", "#{v['price_per_month']}"]
+end
+
+
+write_table('costs.csv', projects_costs_table)
 
 p byzone
 
 # Now for RI coverage
-
+total_servers = 0
+total_covered = 0
+extra_ris = 0
+ri_table = [["Zone","Type","Count","RI's","NOT Covered"]]
 File.open('ri-coverage.csv', 'w') do |file|
-  file.write("Zone,Type,Count,RI's,NOT Covered\n")
   byzone.each_pair do |zone,v|
     ris = reserved_hash[zone] || {}
     v.each_pair do |itype,itv|
       # Now compare v to ris
       rit = ris[itype] || {}
       icount = itv['count']
-      ricount = rit['count']
+      ricount = rit['count'] || 0
       uncovered = icount - ricount
-      file.write("#{zone},#{itype},#{icount},#{ricount},#{uncovered}\n")
+      ri_table << ["#{zone}","#{itype}","#{icount}","#{ricount}","#{uncovered}"]
+      total_servers += icount
+      if uncovered < 0
+        extra_ris += -uncovered
+        total_covered += icount
+      else
+        total_covered += ricount
+      end
     end
   end
 end
+write_table('ri-coverage.csv', ri_table)
 
 
+# todo: Store yesterdays data then compare to show differences
+# expires_in = 86400
+# users_vote_key = "#{votename}-user:#{sh.username}"
+# item = @cache.get(users_vote_key)
+# if item
+# end
+# @cache.put(users_vote_key, split[1], :expires_in => expires_in)
 
-exit
+attachments = []
 
-
-
-
-
-expires_in = 86400
-split = sh.text.split(' ')
-if split.length < 2
-  sh.send_usage("Invalid parameters.")
-  exit
-end
-votename = split[0]
-if split[1][0] != 'y' && split[1][0] != 'n'
-  sh.send_usage("Must be yes or no")
-  exit
-end
-# Ok, input looks ok, let's continue
-
-yes = split[1][0] == 'y'
-# Store what the user posted so we don't count it twice
-users_vote_key = "#{votename}-user:#{sh.username}"
-item = @cache.get(users_vote_key)
-changed = false
-already_voted = false
-if item
-  already_voted = true
-  # then user already voted, if it changed, we can change the counts
-  if item.value[0] == split[1][0]
-    # Same so do nothing
-  else
-    changed = true
-    # change votes
-  end
-end
-yinc = 0
-ninc = 0
-@cache.put(users_vote_key, split[1], :expires_in => expires_in)
-if already_voted
-  if changed
-    # need to update both
-    if yes
-      yinc = 1
-      ninc = -1
-    else
-      yinc = -1
-      ninc = 1
-    end
-  end
+percent_covered = 1.0 * total_covered / total_servers * 100.0
+p percent_covered
+if percent_covered < 75.0
+  text = "Coverage is Bad!"
+  color = "warning"
 else
-  if yes
-    yinc = 1
-  else
-    ninc = 1
-  end
+  text = "Coverage is OK"
+  color = "#00CC66"
 end
-
-yeskey = "#{votename}-yes"
-nokey = "#{votename}-no"
-yr = nil
-nr = nil
-yeses = 0
-nos = 0
-if yinc != 0
-  yr = @cache.increment(yeskey, yinc, :expires_in => expires_in)
-end
-if ninc != 0
-  nr = @cache.increment(nokey, ninc, :expires_in => expires_in)
-end
-if yr.nil?
-  yr = @cache.get(yeskey)
-end
-if nr.nil?
-  nr = @cache.get(nokey)
-end
-if !yr.nil?
-  yeses = yr.value
-end
-if !nr.nil?
-  nos = nr.value
-end
-puts "yeses: #{yeses}"
-puts "nos: #{nos}"
-
-text = ""
-color = "warning"
-if yeses > nos
-  color = "good"
-elsif yeses < nos
-  color = "danger"
-end
-
+fallback = text
 attachment = {
-    "fallback" => text,
-    "text" => "Voting results for `/vote #{votename}`",
+    "fallback" => fallback,
+    "text" => text,
     "color" => color,
     "mrkdwn_in" => ["text", "pretext"],
     "fields" => [
         {
-            "title" => "Yes",
-            "value" => "#{yeses}",
+            "title" => "Servers",
+            "value" => "#{total_servers}",
             "short" => true
         },
         {
-            "title" => "No",
-            "value" => "#{nos}",
+            "title" => "Covered",
+            "value" => "#{total_covered}",
             "short" => true
         },
+        {
+            "title" => "Percent Covered",
+            "value" => "#{sprintf('%.0f', percent_covered)}%",
+            "short" => true
+        },
+        {
+            "title" => "Unused Ri's",
+            "value" => "#{extra_ris}",
+            "short" => true
+        },
+
     ]
 }
+attachments << attachment
 
-sh.send(text, attachment: attachment)
+channels = "#{channel_id}" # comma separated list
+content = stringify_table(projects_costs_table, "\t")
+p content
+p slack.files_upload(content: content, title: "Costs by Project.md", channels: channels)
+content = stringify_table(ri_table, "\t")
+p content
+p slack.files_upload(content: content, title: "RI Coverage.md", channels: channels)
+
+# my_file = Faraday::UploadIO.new("x.html", 'text/html')
+# p slack.files_upload(file: my_file, filetype: 'text/html')
+
+sh.send("This is your daily server report.", attachments: attachments)

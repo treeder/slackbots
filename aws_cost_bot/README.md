@@ -14,7 +14,7 @@ Copy `config-example.json` to `config.json` and fill it in.
 ### 3) Test it
 
 ```
-docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'ruby <BOTNAME>.rb -payload slack.payload -config config.json'
+docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'ruby costbot.rb -payload slack.payload -config config.json'
 ```
 
 ### 4) Upload it

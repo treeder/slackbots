@@ -14,7 +14,7 @@ You can reuse this same incoming URL for all your bots so you don't have to keep
 ### 2) Install dependencies
 
 ```sh
-docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'bundle install --standalone'
+docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'bundle install --standalone --clean'
 ```
 
 ### 3) Test
