@@ -123,7 +123,7 @@ projects_costs_table = [["Project", "Servers", "Monthly Cost"]]
 projects.each_pair do |k,v|
   puts "#{k}, count: #{v['count']}, price_per_month: #{sprintf('$%.2f', v['price_per_month'])}"
   # p v['azs']
-  projects_costs_table << ["#{k}", "#{v['count']}", "#{v['price_per_month']}"]
+  projects_costs_table << ["#{k}", "#{v['count']}", "#{sprintf('$%.2f', v['price_per_month'])}"]
 end
 
 

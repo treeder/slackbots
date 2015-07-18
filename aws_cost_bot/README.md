@@ -19,13 +19,17 @@ docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'ruby 
 
 ### 4) Upload it
 
-
+```
+zip -r costbot.zip .
+iron worker upload --name costbot --zip costbot.zip iron/images:ruby-2.1 ruby costbot.rb
+```
 
 ### 5) Schedule it
 
 This bot is intended to be scheduled, rather than turned into a slash command so instead of making a slash command, 
-schedule it:
+schedule it. After you upload, you'll see a link on your console to HUD where you can schedule it in the 
+UI or you can use the command below:
 
 ```
-iron worker schedule --start-at 2015-06-24T08:00:00Z --run-every 86400 costbot
+iron worker schedule --start-at 2015-06-24T08:00:00Z --run-every 86400 --payload-file slack.payload costbot
 ```
