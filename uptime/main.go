@@ -67,11 +67,13 @@ func main() {
 	sort.Sort(reports)
 
 	if len(reports) > 2 {
-		attachments = append(attachments, buildReportAttachment(reports[0]))
-		attachments = append(attachments, buildReportAttachment(reports[1]))
+		if reports[0].DayAgo.uptimePercentage() < 1 {
+			attachments = append(attachments, buildReportAttachment(reports[0]))
+			attachments = append(attachments, buildReportAttachment(reports[1]))
+		}
 	}
-	//fmt.Println("", attachments)
-	slackClient.post("", attachments)
+	fmt.Println("", attachments)
+	// slackClient.post("", attachments)
 }
 
 func buildReportsAttachment(name string, u UptimeReports) Attachment {
@@ -106,13 +108,13 @@ func buildReportAttachment(u *UptimeReport) Attachment {
 	attachment.Color = "#C77838"
 	attachment.Fields = append(attachment.Fields, Field{
 		Title: "24 hours",
-		Value: fmt.Sprintf("%.4f%% (%s)", u.DayAgo.uptimePercentage(),
+		Value: fmt.Sprintf("%.4f%% (%s)", u.DayAgo.uptimePercentage()*100,
 			(u.DayAgo.Downtime() * time.Second).String()),
 		Short: true,
 	})
 	attachment.Fields = append(attachment.Fields, Field{
 		Title: "7 Days",
-		Value: fmt.Sprintf("%.4f%% (%s)", u.WeekAgo.uptimePercentage(),
+		Value: fmt.Sprintf("%.4f%% (%s)", u.WeekAgo.uptimePercentage()*100,
 			(u.WeekAgo.Downtime() * time.Second).String()),
 		Short: true,
 	})
