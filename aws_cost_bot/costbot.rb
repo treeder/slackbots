@@ -12,7 +12,7 @@ channel_id = "x"
 
 # apparently the only way to get the channel id is like this:
 slack.channels_list['channels'].each do |c|
-  puts "name: #{c['name']}, id: #{c['id']}"
+  # puts "name: #{c['name']}, id: #{c['id']}"
   if c['name'] == channel || c['name'] == channel[1..channel.length]
     channel_id = c['id']
     break
@@ -47,8 +47,6 @@ reserved.body['reservedInstancesSet'].each do |ris|
   azhash[itype] = itypehash
   reserved_hash[az] = azhash
 end
-
-p reserved_hash
 
 # Retrieve pricing
 price_list = AwsPricing::Ec2PriceList.new
@@ -122,8 +120,6 @@ end
 
 # Sort project costs by cost desc
 sorted_projects = projects.sort_by { |k,v| v['price_per_month'] }.reverse
-puts "sorted_projects"
-p sorted_projects
 
 total_cost = 0.0
 projects_costs_table = [["Project", "Servers", "Monthly Cost"]]
