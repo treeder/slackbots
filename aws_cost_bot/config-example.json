@@ -1,0 +1,9 @@
+{
+  "webhook_url": "https://hooks.slack.com/services/ABC",
+  "slack_token": "abc",
+  "channel": "#test",
+  "aws": {
+    "access_key": "ACCESS KEY",
+    "secret_key": "SECRET KEY"
+  }
+}

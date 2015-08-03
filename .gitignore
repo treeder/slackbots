@@ -6,3 +6,4 @@ config.json
 iron.json
 
 bundle/
+.bundle/
