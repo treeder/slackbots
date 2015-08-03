@@ -72,8 +72,8 @@ func main() {
 			attachments = append(attachments, buildReportAttachment(reports[1]))
 		}
 	}
-	fmt.Println("", attachments)
-	// slackClient.post("", attachments)
+	// fmt.Println("", attachments)
+	slackClient.post("", attachments)
 }
 
 func buildReportsAttachment(name string, u UptimeReports) Attachment {

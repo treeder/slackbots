@@ -34,15 +34,12 @@ Pingdom requires your username, password, and api token in order to use their ap
   ]
 }
 ```
-#### Run `go build` to build the binary.
-`./uptime` to run the program.
+#### Build the bot using docker
+```
+docker run --rm -v "$GOPATH":/gopath -e "GOPATH=/gopath" -v "$(pwd)":/worker -w /worker iron/images:go-1.4 sh -c 'go build -o uptime'
+```
 
 ## Uploading to iron worker
-#### Build the binary for amd64
-```
-GOOS=linux GOARCH=amd64 go build
-```
-
 #### Zip the folder
 ```
 zip -r uptime.zip .
@@ -51,4 +48,9 @@ zip -r uptime.zip .
 #### Upload to ironworker
 ```
 iron worker upload --zip uptime.zip --name uptime iron/images:go-1.4 ./uptime
+```
+
+#### Run the worker
+```
+iron worker queue uptime
 ```
