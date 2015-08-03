@@ -19,6 +19,7 @@ slack.channels_list['channels'].each do |c|
   end
 end
 
+# todo: since this one uses the api directly already, don't bother with incoming webhook
 sh = SlackWebhooks::Hook.new('costbot', IronWorker.payload, IronWorker.config['webhook_url'])
 sh.icon_url = "http://images.clipartpanda.com/save-money-icon-save-money-icon-iebaaazn.png"
 sh.channel = channel
@@ -119,17 +120,23 @@ def stringify_table(table, separator=",")
   s
 end
 
+# Sort project costs by cost desc
+sorted_projects = projects.sort_by { |k,v| v['price_per_month'] }.reverse
+puts "sorted_projects"
+p sorted_projects
+
+total_cost = 0.0
 projects_costs_table = [["Project", "Servers", "Monthly Cost"]]
-projects.each_pair do |k,v|
+sorted_projects.each_with_index do |a,i|
+  k = a[0]
+  v = a[1]
+  total_cost += v['price_per_month']
   puts "#{k}, count: #{v['count']}, price_per_month: #{sprintf('$%.2f', v['price_per_month'])}"
   # p v['azs']
   projects_costs_table << ["#{k}", "#{v['count']}", "#{sprintf('$%.2f', v['price_per_month'])}"]
 end
 
-
 write_table('costs.csv', projects_costs_table)
-
-p byzone
 
 # Now for RI coverage
 total_servers = 0
@@ -193,6 +200,11 @@ attachment = {
         {
             "title" => "Covered",
             "value" => "#{total_covered}",
+            "short" => true
+        },
+        {
+            "title" => "Est. Monthly Cost",
+            "value" => "#{sprintf('$%.2f', total_cost)}",
             "short" => true
         },
         {
