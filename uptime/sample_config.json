@@ -1,0 +1,18 @@
+{
+  "username": "PINGDOM_EMAIL",
+  "password": "PINGDOM_PASSWORD",
+  "api_key": "PINGDOM_API_KEY",
+  "webook_url": "SLACK_WEBHOOK_URL",
+  "mq":[
+    123,
+    456
+  ],
+  "worker": [
+    123,
+    456
+  ],
+  "other": [
+    123,
+    456
+  ]
+}
