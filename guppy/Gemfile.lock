@@ -1,18 +1,20 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    iron_core (1.0.7)
-      rest (>= 3.0.4)
-    iron_worker (3.0.2)
-      iron_core (>= 0.5.1)
-      rest (>= 3.0.6)
+    iron_core (0.6.2)
+      rest (>= 2.2.0)
+    iron_worker (3.3.0)
+      iron_core (~> 0.5, >= 0.5.1)
+      json (~> 1.8, > 1.8.1)
+      rest (~> 3.0, >= 3.0.6)
+    json (1.8.3)
     net-http-persistent (2.9.4)
-    netrc (0.10.3)
+    netrc (0.11.0)
     rest (3.0.6)
       net-http-persistent (>= 2.9.1)
       netrc
-    slack-notifier (1.1.0)
-    slack_webhooks (0.0.9)
+    slack-notifier (1.5.1)
+    slack_webhooks (0.0.11)
       slack-notifier (>= 0.5.1)
 
 PLATFORMS
@@ -21,3 +23,6 @@ PLATFORMS
 DEPENDENCIES
   iron_worker
   slack_webhooks
+
+BUNDLED WITH
+   1.12.3
