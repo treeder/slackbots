@@ -6,11 +6,11 @@ directly from this repo on Github.
 ## Building
 
 ```sh
-docker build -t treeder/guppy .
+docker build -t treeder/guppy:`cat VERSION` .
 ```
 
 Test it with:
 
 ```sh
-docker run --rm -e "PAYLOAD=`cat slack.payload`" treeder/guppy
+docker run --rm -e "PAYLOAD=`cat slack.payload`" treeder/guppy:`cat VERSION`
 ```
