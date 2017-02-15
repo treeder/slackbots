@@ -1,0 +1,6 @@
+name: treeder/guppy
+version: 0.0.5
+runtime: ruby
+entrypoint: ruby func.rb
+path: /guppy
+max_concurrency: 1

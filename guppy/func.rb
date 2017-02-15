@@ -1,16 +1,13 @@
+require_relative 'bundle/bundler/setup'
 require 'open-uri'
 require 'iron_worker'
 require 'slack_webhooks'
 
-# puts "ENV"
-# p ENV
-
-payload = ENV['PAYLOAD']
-# puts "PAYLOAD: #{payload}"
-# STDOUT.flush
+payload = STDIN.read
+STDERR.puts "PAYLOAD: #{payload}"
 
 images = JSON.load(open('https://raw.githubusercontent.com/treeder/slackbots/master/guppy/commands.json'))
-# Use this one to load from file: responses = JSON.load(File.open('commands.json'))
+# Use this line to load from file: responses = JSON.load(File.open('commands.json'))
 
 attachment = {
     "fallback" => "wat?!",
@@ -34,7 +31,7 @@ if payload.nil? || payload.strip == ""
   exit
 end
 
-# should move the parsing in slack webhooks to a separate method
+# should move the parsing in slack webhooks to a separate parse method
 sh = SlackWebhooks::Hook.new('guppy', payload, "")
 
 r = images[sh.text]

@@ -1,60 +1,46 @@
-All of the examples in this repository follow the same pattern for testing and uploading to IronWorker. Just `cd`
-into the bots directory and do the following: 
+# Serverless Slackbots for IronFunctions
 
-### 1) Create an Incoming Webhook URL in Slack, then create a config file, `config.json`, that looks like this:
+All of the examples in this repository follow the same pattern building, testing and deploying. 
 
-```json
-{
-  "webhook_url": "https://hooks.slack.com/services/abc/123/xyz"
-}
-```
+First be sure you've install the `fn` cli tool, [check here for instructions](https://github.com/iron-io/functions#quickstart). 
 
-You can reuse this same incoming URL for all your bots so you don't have to keep making new ones. 
+Then `cd` into the the bot's directory in this repo and do the following: 
 
-### 2) Install dependencies
+### 1) Install dependencies
+
+These bots are all written in Ruby so we need to install the gems. You don't even need Ruby installed though, just Docker. 
 
 ```sh
-docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'bundle install --standalone --clean'
+docker run --rm -v ${pwd}:/worker -w /worker iron/ruby:dev sh -c 'bundle install --standalone --clean'
 ```
 
-### 3) Test
+### 2) Build and Test
 
 Each bot directory has a slack.payload file that is an example file so you can run a quick test that will
 post a message to slack. Run it with this command: 
 
 ```sh
-docker run --rm -v "$(pwd)":/worker -w /worker iron/images:ruby-2.1 sh -c 'ruby <BOTNAME>.rb -payload slack.payload -config config.json'
+fn build
+cat slack.payload | fn run
 ```
 
-### 4) Upload to IronWorker
+### 3) Deploy
+
+Assuming you already [have an app](https://github.com/iron-io/functions#create-an-application) on an IronFunctions installation. 
 
 ```sh
-zip -r <BOTNAME>.zip .
-iron worker upload --stack ruby-2.1 --config-file config.json <BOTNAME>.zip ruby <BOTNAME>.rb
+# Push function for distribution
+fn push
+# Create a route in the mybots app at the path /guppy to our brand new function!
+fn routes create mybots /guppy
 ```
 
-Grab the URL that will be printed after you run the previous command and surf to it in your browser, it will look 
-something like this:
-
-```
-https://hud.iron.io/tq/projects/4fd2729368/code/50fd7a3051df9225ba
-```
-
-On that page, you’ll see a Webhook URL, it will look something like this:
-
-```
-https://worker-aws-us-east-1.iron.io/2/projects/4fd2729368/tasks/webhook?code_name=hello&oauth=abc
-```
-
-Copy that URL, we'll use it in the next step. 
-
-### 5) Create a Slash Command integration in Slack
+### 4) Create a Slash Command integration in Slack
 
 In Slack, go to Integrations, find Slash Commands, click Add, type in /<BOTNAME> as the command then click Add again. 
-On the next page, take the IronWorker’s webhook URL you got in the step above and paste it into the URL
+On the next page, paste in your new bots URL, for example: http://your-functions-servers.com/r/mybots/guppy , and paste it into the URL
 field then click Save Integration.
 
-### 6) Try it out!
+### 5) Try it out!
 
 In slack, type `/<BOTNAME> [options]` and you'll see the magic!
-
