@@ -1,1 +1,1 @@
-token=somerandomtoken&team_id=someteamid&team_domain=somename&channel_id=somechannelid&channel_name=directmessage&user_id=someid&user_name=travis&command=%2Fguppy&text=f
+token=somerandomtoken&team_id=someteamid&team_domain=somename&channel_id=somechannelid&channel_name=directmessage&user_id=someid&user_name=travis&command=%2Fguppy&text=this%20is%20the%20body&response_url=https://hooks.slack.com/commands/1234/5678&trigger_id=13345224609.738474920.8088930838d88f008e0

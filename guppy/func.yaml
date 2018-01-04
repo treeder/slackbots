@@ -1,0 +1,3 @@
+version: 0.0.3
+runtime: ruby
+entrypoint: ruby guppy.rb
