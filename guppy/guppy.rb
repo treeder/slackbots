@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'slack_webhooks'
+require 'json'
 
 # Comment out the next line and uncomment the one after to load the commands.json from your local file
 # rather than the URL
@@ -21,19 +22,28 @@ attachment = {
     "image_url" => "http://i.imgur.com/7kZ562z.jpg"
 }
 
-help = "Available options are:\n"
-responses.each_key { |k| help << "* #{k}\n" }
-# puts help
-sh.set_usage(help, attachment: attachment)
-exit if sh.help?
-
 r = responses[sh.text]
 if r
   attachment['image_url'] = r['image_url']
 else
-  sh.send_usage("You gave me #{sh.text} -- Je ne comprend pas.")
+  # help
+  help = "Available options are:\n"
+  responses.each_key { |k| help << "* #{k}\n" }
+  response = {
+    "response_type" => "ephemeral",
+    "text" => help,
+    "attachments" => [attachment]
+  }
+  s = response.to_json
+  STDERR.puts "responding with #{s}"
+  puts s
   exit
 end
 
 s = "#{sh.command} #{sh.text}"
-sh.send s, attachment: attachment
+response = {
+  "response_type" => "in_channel",
+  "text" => s,
+  "attachments" => [attachment]
+}
+puts response.to_json

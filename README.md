@@ -7,7 +7,7 @@ into the bots directory and do the following:
 ## Deploy
 
 ```sh
-fn deploy --app slackbots
+fn deploy --app slackbots BOTNAME
 ```
 
 ## Create a Slash command in Slack
